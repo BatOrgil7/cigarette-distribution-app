@@ -11,7 +11,10 @@ const brands = [
     name: "Newport",
     image: "/brands/newport.png"
   },
-  // Add more as needed
+  {
+    name: "Esse Change",
+    image: "/brands/Esse-Change.jpg"
+  },
 ];
 
 export default brands;
