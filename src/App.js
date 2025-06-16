@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"; 
+import React, { useState, useEffect, useRef } from "react";
 import brands from "./data/brands";
 
 const App = () => {
@@ -13,8 +13,8 @@ const App = () => {
   });
   const [selectedBrand, setSelectedBrand] = useState(null);
 
-  // Ref to track if we should print
-  const shouldPrint = useRef(false);
+  // Store the shipment just submitted for printing
+  const [printShipment, setPrintShipment] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,18 +38,20 @@ const App = () => {
       totalPrice: form.quantity * form.pricePerPack,
       date: new Date().toLocaleString(),
     };
-    // Flag to print after update
-    shouldPrint.current = true;
     setShipments([...shipments, shipment]);
+    setPrintShipment(shipment); // save for printing
   };
 
-  // useEffect to print after shipments update
+  // useEffect to trigger print after printShipment is set
   useEffect(() => {
-    if (shouldPrint.current) {
-      shouldPrint.current = false; // reset flag
-      window.print();
+    if (printShipment) {
+      // Use setTimeout to let React render the print content before printing
+      setTimeout(() => {
+        window.print();
+        setPrintShipment(null); // reset after printing
+      }, 100);
     }
-  }, [shipments]);
+  }, [printShipment]);
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -167,6 +169,23 @@ const App = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Hidden print section */}
+      <div style={{ display: "none" }}>
+        {printShipment && (
+          <div>
+            <h2>Түгээмэл мэдээлэл</h2>
+            <p><strong>Огноо:</strong> {printShipment.date}</p>
+            <p><strong>Жолооч:</strong> {printShipment.driver}</p>
+            <p><strong>Дэлгүүр:</strong> {printShipment.shop}</p>
+            <p><strong>Бренд:</strong> {printShipment.brand}</p>
+            <p><strong>Сав баглаа боодлын төрөл:</strong> {printShipment.packType}</p>
+            <p><strong>Тоо ширхэг:</strong> {printShipment.quantity}</p>
+            <p><strong>Үнэ:</strong> ${printShipment.pricePerPack}</p>
+            <p><strong>Нийт үнэ:</strong> ${printShipment.totalPrice}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
