@@ -37,8 +37,12 @@ const App = () => {
       totalPrice: form.quantity * form.pricePerPack,
       date: new Date().toLocaleString(),
     };
-    setShipments([...shipments, shipment]);
-    window.print();
+    setShipments((prev) => {
+    const updated = [...prev, shipment];
+    setTimeout(() => window.print(), 100); // Give DOM time to update
+    return updated;
+});
+
   };
 
   return (
