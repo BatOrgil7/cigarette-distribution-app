@@ -1,8 +1,7 @@
-import React, { useState } from "react"; 
+import React, { useState, useEffect, useRef } from "react"; 
 import brands from "./data/brands";
 
 const App = () => {
-  const [drivers, setDrivers] = useState([]);
   const [shipments, setShipments] = useState([]);
   const [form, setForm] = useState({
     driver: "",
@@ -12,8 +11,10 @@ const App = () => {
     quantity: 0,
     pricePerPack: 0,
   });
-
   const [selectedBrand, setSelectedBrand] = useState(null);
+
+  // Ref to track if we should print
+  const shouldPrint = useRef(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -37,9 +38,18 @@ const App = () => {
       totalPrice: form.quantity * form.pricePerPack,
       date: new Date().toLocaleString(),
     };
+    // Flag to print after update
+    shouldPrint.current = true;
     setShipments([...shipments, shipment]);
-    window.print();
   };
+
+  // useEffect to print after shipments update
+  useEffect(() => {
+    if (shouldPrint.current) {
+      shouldPrint.current = false; // reset flag
+      window.print();
+    }
+  }, [shipments]);
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -53,7 +63,9 @@ const App = () => {
               key={brand.name}
               onClick={() => handleBrandClick(brand)}
               className={`cursor-pointer border rounded p-4 w-32 text-center ${
-                selectedBrand?.name === brand.name ? "border-blue-500 bg-blue-100" : "border-gray-300 bg-white"
+                selectedBrand?.name === brand.name
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-gray-300 bg-white"
               }`}
             >
               <img
@@ -92,7 +104,9 @@ const App = () => {
         >
           <option value="">Сав баглаа боодлын төрөл сонгох</option>
           {selectedBrand?.packTypes.map((type) => (
-            <option key={type} value={type}>{type}</option>
+            <option key={type} value={type}>
+              {type}
+            </option>
           ))}
         </select>
 
