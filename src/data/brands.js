@@ -8,7 +8,7 @@ const brands = [
   {
     name: "Marlboro",
     image: "/brands/marlboro.jpg",
-    pricePerPack: 15,000,
+    pricePerPack: 15000,
     packTypes: ["Red", "Gold", "Menthol"]
   }
 ];
