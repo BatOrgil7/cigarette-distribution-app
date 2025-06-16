@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import brands from "./data/brands";
 
 const App = () => {
@@ -12,8 +12,6 @@ const App = () => {
     pricePerPack: 0,
   });
   const [selectedBrand, setSelectedBrand] = useState(null);
-
-  // Store the shipment just submitted for printing
   const [printShipment, setPrintShipment] = useState(null);
 
   const handleChange = (e) => {
@@ -33,22 +31,23 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const shipment = {
       ...form,
       totalPrice: form.quantity * form.pricePerPack,
       date: new Date().toLocaleString(),
     };
-    setShipments([...shipments, shipment]);
-    setPrintShipment(shipment); // save for printing
+
+    setShipments((prev) => [...prev, shipment]);
+    setPrintShipment(shipment); // Save current shipment for printing
   };
 
-  // useEffect to trigger print after printShipment is set
+  // Trigger print when printShipment is set
   useEffect(() => {
     if (printShipment) {
-      // Use setTimeout to let React render the print content before printing
       setTimeout(() => {
         window.print();
-        setPrintShipment(null); // reset after printing
+        setPrintShipment(null); // Reset after printing
       }, 100);
     }
   }, [printShipment]);
@@ -120,6 +119,7 @@ const App = () => {
           onChange={handleChange}
           className="p-2 border rounded"
           required
+          min="1"
         />
 
         <input
@@ -130,6 +130,8 @@ const App = () => {
           placeholder="Сав тутам үнэ ($)"
           className="p-2 border rounded"
           required
+          min="0"
+          step="0.01"
         />
 
         <button
@@ -170,22 +172,56 @@ const App = () => {
         </tbody>
       </table>
 
-      {/* Hidden print section */}
-      <div style={{ display: "none" }}>
-        {printShipment && (
-          <div>
-            <h2>Түгээмэл мэдээлэл</h2>
-            <p><strong>Огноо:</strong> {printShipment.date}</p>
-            <p><strong>Жолооч:</strong> {printShipment.driver}</p>
-            <p><strong>Дэлгүүр:</strong> {printShipment.shop}</p>
-            <p><strong>Бренд:</strong> {printShipment.brand}</p>
-            <p><strong>Сав баглаа боодлын төрөл:</strong> {printShipment.packType}</p>
-            <p><strong>Тоо ширхэг:</strong> {printShipment.quantity}</p>
-            <p><strong>Үнэ:</strong> ${printShipment.pricePerPack}</p>
-            <p><strong>Нийт үнэ:</strong> ${printShipment.totalPrice}</p>
-          </div>
-        )}
-      </div>
+      {/* Print-only current shipment */}
+      {printShipment && (
+        <div className="print-only" style={{ display: "none" }}>
+          <h2 className="text-xl font-semibold mb-2">Шинэ түгээлтийн мэдээлэл</h2>
+          <table className="w-full border text-sm">
+            <thead>
+              <tr>
+                <th className="border p-2">Огноо</th>
+                <th className="border p-2">Жолооч</th>
+                <th className="border p-2">Дэлгүүр</th>
+                <th className="border p-2">Бренд</th>
+                <th className="border p-2">Сав баглаа боодол төрөл</th>
+                <th className="border p-2">Тоо ширхэг</th>
+                <th className="border p-2">Үнэ</th>
+                <th className="border p-2">Нийт</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border p-2">{printShipment.date}</td>
+                <td className="border p-2">{printShipment.driver}</td>
+                <td className="border p-2">{printShipment.shop}</td>
+                <td className="border p-2">{printShipment.brand}</td>
+                <td className="border p-2">{printShipment.packType}</td>
+                <td className="border p-2">{printShipment.quantity}</td>
+                <td className="border p-2">${printShipment.pricePerPack}</td>
+                <td className="border p-2 font-bold">${printShipment.totalPrice}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print-only, .print-only * {
+            visibility: visible;
+          }
+          .print-only {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            display: block !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
