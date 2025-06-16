@@ -1,101 +1,145 @@
 import React, { useState } from "react";
 import brands from "./data/brands";
 
-function App() {
+const App = () => {
+  const [drivers, setDrivers] = useState([]);
+  const [shipments, setShipments] = useState([]);
+  const [form, setForm] = useState({
+    driver: "",
+    shop: "",
+    brand: "",
+    packType: "",
+    quantity: 0,
+    pricePerPack: 0,
+  });
+
   const [selectedBrand, setSelectedBrand] = useState(null);
-  const [selectedPackType, setSelectedPackType] = useState("");
-  const [quantity, setQuantity] = useState(0);
 
-  const totalPrice = selectedBrand
-    ? (quantity * selectedBrand.pricePerPack).toFixed(2)
-    : 0;
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const handlePrint = () => {
+  const handleBrandClick = (brand) => {
+    setSelectedBrand(brand);
+    setForm({
+      ...form,
+      brand: brand.name,
+      pricePerPack: brand.pricePerPack,
+      packType: "",
+      quantity: 0,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const shipment = {
+      ...form,
+      totalPrice: form.quantity * form.pricePerPack,
+      date: new Date().toLocaleString(),
+    };
+    setShipments([...shipments, shipment]);
     window.print();
   };
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      <h1>Cigarette Distribution App</h1>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">Cigarette Distribution Tracker</h1>
 
-      <h2>Select Brand:</h2>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        {brands.map((brand) => (
-          <div
-            key={brand.name}
-            onClick={() => {
-              setSelectedBrand(brand);
-              setSelectedPackType("");
-              setQuantity(0);
-            }}
-            style={{
-              cursor: "pointer",
-              border:
-                selectedBrand?.name === brand.name
-                  ? "2px solid blue"
-                  : "1px solid gray",
-              borderRadius: "8px",
-              padding: "1rem",
-              width: "120px",
-              textAlign: "center",
-              backgroundColor:
-                selectedBrand?.name === brand.name ? "#e0f7ff" : "#fff"
-            }}
-          >
-            <img
-              src={brand.image}
-              alt={brand.name}
-              style={{ width: "100px", height: "auto" }}
-            />
-            <p>{brand.name}</p>
-          </div>
-        ))}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Select Brand:</h2>
+        <div className="flex flex-wrap gap-4">
+          {brands.map((brand) => (
+            <div
+              key={brand.name}
+              onClick={() => handleBrandClick(brand)}
+              className={`cursor-pointer border rounded p-4 w-32 text-center ${
+                selectedBrand?.name === brand.name ? "border-blue-500 bg-blue-100" : "border-gray-300 bg-white"
+              }`}
+            >
+              <img
+                src={brand.image}
+                alt={brand.name}
+                className="w-24 h-auto mx-auto mb-2"
+              />
+              <p className="text-sm font-medium">{brand.name}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {selectedBrand && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3>Brand: {selectedBrand.name}</h3>
-          <p>Price per pack: ${selectedBrand.pricePerPack.toFixed(2)}</p>
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mb-6">
+        <input name="driver" placeholder="Driver Name" onChange={handleChange} className="p-2 border rounded" required />
+        <input name="shop" placeholder="Shop Name" onChange={handleChange} className="p-2 border rounded" required />
 
-          <label>
-            Pack Type:
-            <select
-              value={selectedPackType}
-              onChange={(e) => setSelectedPackType(e.target.value)}
-              style={{ marginLeft: "0.5rem" }}
-            >
-              <option value="">Select type</option>
-              {selectedBrand.packTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </label>
+        <select
+          name="packType"
+          value={form.packType}
+          onChange={handleChange}
+          className="p-2 border rounded"
+          required
+        >
+          <option value="">Select Pack Type</option>
+          {selectedBrand?.packTypes.map((type) => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
 
-          <br />
-          <br />
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Quantity"
+          value={form.quantity}
+          onChange={handleChange}
+          className="p-2 border rounded"
+          required
+        />
 
-          <label>
-            Quantity:
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              min={0}
-              style={{ marginLeft: "0.5rem", width: "60px" }}
-            />
-          </label>
+        <input
+          type="number"
+          name="pricePerPack"
+          value={form.pricePerPack}
+          onChange={handleChange}
+          placeholder="Price per Pack ($)"
+          className="p-2 border rounded"
+          required
+        />
 
-          <h4>Total: ${totalPrice}</h4>
+        <button type="submit" className="col-span-2 bg-blue-600 text-white p-2 rounded">
+          Record Shipment & Print
+        </button>
+      </form>
 
-          <button onClick={handlePrint} style={{ marginTop: "1rem" }}>
-            Print Receipt
-          </button>
-        </div>
-      )}
+      <h2 className="text-xl font-semibold mb-2">Shipment History</h2>
+      <table className="w-full border text-sm">
+        <thead>
+          <tr>
+            <th className="border p-2">Date</th>
+            <th className="border p-2">Driver</th>
+            <th className="border p-2">Shop</th>
+            <th className="border p-2">Brand</th>
+            <th className="border p-2">Pack Type</th>
+            <th className="border p-2">Quantity</th>
+            <th className="border p-2">Price</th>
+            <th className="border p-2">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {shipments.map((s, idx) => (
+            <tr key={idx}>
+              <td className="border p-2">{s.date}</td>
+              <td className="border p-2">{s.driver}</td>
+              <td className="border p-2">{s.shop}</td>
+              <td className="border p-2">{s.brand}</td>
+              <td className="border p-2">{s.packType}</td>
+              <td className="border p-2">{s.quantity}</td>
+              <td className="border p-2">${s.pricePerPack}</td>
+              <td className="border p-2 font-bold">${s.totalPrice}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-}
+};
 
 export default App;
