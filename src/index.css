@@ -11,3 +11,24 @@ h1 {
   text-align: center;
   margin-top: 2rem;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  div {
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: white;
+    padding: 2rem;
+  }
+
+  button,
+  select,
+  input {
+    display: none;
+  }
+}
