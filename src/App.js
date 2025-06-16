@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; 
 import brands from "./data/brands";
 
 const App = () => {
+  const [drivers, setDrivers] = useState([]);
   const [shipments, setShipments] = useState([]);
   const [form, setForm] = useState({
     driver: "",
@@ -29,118 +30,30 @@ const App = () => {
     });
   };
 
-  const handlePrint = (shipmentsToPrint) => {
-    const html = `
-      <html>
-        <head>
-          <title>Shipment Report</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            table { border-collapse: collapse; width: 100%; }
-            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-            th { background: #eee; }
-          </style>
-        </head>
-        <body>
-          <h1>Shipment Report</h1>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Driver</th>
-                <th>Shop</th>
-                <th>Brand</th>
-                <th>Pack Type</th>
-                <th>Quantity</th>
-                <th>Price per Pack ($)</th>
-                <th>Total ($)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${shipmentsToPrint
-                .map(
-                  (s) => `
-                <tr>
-                  <td>${s.date}</td>
-                  <td>${s.driver}</td>
-                  <td>${s.shop}</td>
-                  <td>${s.brand}</td>
-                  <td>${s.packType}</td>
-                  <td>${s.quantity}</td>
-                  <td>${s.pricePerPack.toFixed(2)}</td>
-                  <td>${s.totalPrice.toFixed(2)}</td>
-                </tr>
-              `
-                )
-                .join("")}
-            </tbody>
-          </table>
-        </body>
-      </html>
-    `;
-
-    const printWindow = window.open("", "_blank", "width=800,height=600");
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (
-      !form.driver ||
-      !form.shop ||
-      !form.brand ||
-      !form.packType ||
-      form.quantity <= 0 ||
-      form.pricePerPack <= 0
-    ) {
-      alert("Please fill out all fields with valid values.");
-      return;
-    }
-
     const shipment = {
       ...form,
-      quantity: Number(form.quantity),
-      pricePerPack: Number(form.pricePerPack),
-      totalPrice: Number(form.quantity) * Number(form.pricePerPack),
+      totalPrice: form.quantity * form.pricePerPack,
       date: new Date().toLocaleString(),
     };
-
-    const newShipments = [...shipments, shipment];
-    setShipments(newShipments);
-
-    setForm({
-      driver: "",
-      shop: "",
-      brand: "",
-      packType: "",
-      quantity: 0,
-      pricePerPack: 0,
-    });
-    setSelectedBrand(null);
-
-    setTimeout(() => handlePrint(newShipments), 100);
+    setShipments([...shipments, shipment]);
+    window.print();
   };
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Cigarette Distribution Tracker</h1>
+      <h1 className="text-3xl font-bold mb-4">Тамхины түгээлтийн бүртгэл</h1>
 
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Select Brand:</h2>
+        <h2 className="text-xl font-semibold mb-2">Бренд сонгох:</h2>
         <div className="flex flex-wrap gap-4">
           {brands.map((brand) => (
             <div
               key={brand.name}
               onClick={() => handleBrandClick(brand)}
               className={`cursor-pointer border rounded p-4 w-32 text-center ${
-                selectedBrand?.name === brand.name
-                  ? "border-blue-500 bg-blue-100"
-                  : "border-gray-300 bg-white"
+                selectedBrand?.name === brand.name ? "border-blue-500 bg-blue-100" : "border-gray-300 bg-white"
               }`}
             >
               <img
@@ -157,17 +70,15 @@ const App = () => {
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mb-6">
         <input
           name="driver"
-          placeholder="Driver Name"
+          placeholder="Жолоочийн нэр"
           onChange={handleChange}
-          value={form.driver}
           className="p-2 border rounded"
           required
         />
         <input
           name="shop"
-          placeholder="Shop Name"
+          placeholder="Дэлгүүрийн нэр"
           onChange={handleChange}
-          value={form.shop}
           className="p-2 border rounded"
           required
         />
@@ -178,24 +89,20 @@ const App = () => {
           onChange={handleChange}
           className="p-2 border rounded"
           required
-          disabled={!selectedBrand}
         >
-          <option value="">Select Pack Type</option>
+          <option value="">Сав баглаа боодлын төрөл сонгох</option>
           {selectedBrand?.packTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
+            <option key={type} value={type}>{type}</option>
           ))}
         </select>
 
         <input
           type="number"
           name="quantity"
-          placeholder="Quantity"
+          placeholder="Тоо ширхэг"
           value={form.quantity}
           onChange={handleChange}
           className="p-2 border rounded"
-          min="1"
           required
         />
 
@@ -203,35 +110,32 @@ const App = () => {
           type="number"
           name="pricePerPack"
           value={form.pricePerPack}
-          placeholder="Price per Pack ($)"
-          className="p-2 border rounded"
           onChange={handleChange}
+          placeholder="Сав тутам үнэ ($)"
+          className="p-2 border rounded"
           required
-          min="0"
-          step="0.01"
-          readOnly={selectedBrand !== null}
         />
 
         <button
           type="submit"
           className="col-span-2 bg-blue-600 text-white p-2 rounded"
         >
-          Record Shipment & Print
+          Түгээмэл бүртгэх ба хэвлэх
         </button>
       </form>
 
-      <h2 className="text-xl font-semibold mb-2">Shipment History</h2>
+      <h2 className="text-xl font-semibold mb-2">Түгээлтийн түүх</h2>
       <table className="w-full border text-sm">
         <thead>
           <tr>
-            <th className="border p-2">Date</th>
-            <th className="border p-2">Driver</th>
-            <th className="border p-2">Shop</th>
-            <th className="border p-2">Brand</th>
-            <th className="border p-2">Pack Type</th>
-            <th className="border p-2">Quantity</th>
-            <th className="border p-2">Price</th>
-            <th className="border p-2">Total</th>
+            <th className="border p-2">Огноо</th>
+            <th className="border p-2">Жолооч</th>
+            <th className="border p-2">Дэлгүүр</th>
+            <th className="border p-2">Бренд</th>
+            <th className="border p-2">Сав баглаа боодол төрөл</th>
+            <th className="border p-2">Тоо ширхэг</th>
+            <th className="border p-2">Үнэ</th>
+            <th className="border p-2">Нийт</th>
           </tr>
         </thead>
         <tbody>
@@ -243,8 +147,8 @@ const App = () => {
               <td className="border p-2">{s.brand}</td>
               <td className="border p-2">{s.packType}</td>
               <td className="border p-2">{s.quantity}</td>
-              <td className="border p-2">${s.pricePerPack.toFixed(2)}</td>
-              <td className="border p-2 font-bold">${s.totalPrice.toFixed(2)}</td>
+              <td className="border p-2">${s.pricePerPack}</td>
+              <td className="border p-2 font-bold">${s.totalPrice}</td>
             </tr>
           ))}
         </tbody>
