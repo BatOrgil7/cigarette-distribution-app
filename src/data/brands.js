@@ -1,17 +1,31 @@
+// src/data/brands.js
 const brands = [
   {
-    name: "Esse Change",
-    image: "/brands/Esse-Change.jpg",
-    pricePerPack: 6500,
-    packTypes: ["Regular", "Menthol", "100s"]
+    name: "Marlboro",
+    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e31f_marlboro.png",
+    pricePerPack: 10,
+    packTypes: ["Box", "Pack"],
   },
   {
-    name: "Marlboro",
-    image: "/brands/marlboro.jpg",
-    pricePerPack: 15000,
-    packTypes: ["Red", "Gold", "Menthol"]
-  }
+    name: "Winston",
+    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e320_winston.png",
+    pricePerPack: 9.5,
+    packTypes: ["Box", "Pack"],
+  },
+  {
+    name: "L&M",
+    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e321_lm.png",
+    pricePerPack: 8.75,
+    packTypes: ["Box", "Pack"],
+  },
+  {
+    name: "Parliament",
+    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e322_parliament.png",
+    pricePerPack: 11.25,
+    packTypes: ["Box", "Pack"],
+  },
 ];
 
 export default brands;
+
 
