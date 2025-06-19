@@ -14,13 +14,13 @@ const brands = [
   },
   {
     name: "L&M",
-    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e321_lm.png",
+    image: "/brands/L&M.jpeg",
     pricePerPack: 8.75,
     packTypes: ["Box", "Pack"],
   },
   {
     name: "Parliament",
-    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e322_parliament.png",
+    image: "/brands/Parliament.png",
     pricePerPack: 11.25,
     packTypes: ["Box", "Pack"],
   },
