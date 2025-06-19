@@ -2,13 +2,13 @@
 const brands = [
   {
     name: "Marlboro",
-    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e31f_marlboro.png",
+    image: "/brands/marlboro.jpg",
     pricePerPack: 10,
     packTypes: ["Box", "Pack"],
   },
   {
     name: "Winston",
-    image: "https://cdn.prod.website-files.com/663ae41a035a5092ac55e30d/663ae41a035a5092ac55e320_winston.png",
+    image: "/brands/winston.png",
     pricePerPack: 9.5,
     packTypes: ["Box", "Pack"],
   },
