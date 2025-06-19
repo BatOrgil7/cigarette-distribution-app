@@ -1,4 +1,3 @@
-// src/data/brands.js
 const brands = [
   {
     name: "Marlboro",
@@ -27,5 +26,6 @@ const brands = [
 ];
 
 export default brands;
+
 
 
